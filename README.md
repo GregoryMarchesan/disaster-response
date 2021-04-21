@@ -2,9 +2,7 @@
 
 ## Summary
 
-The project aims to use a NLP Machine Learning Pipeline in order to detect cases and 
-provide faster help when disasters occur. 
-The data was provided by Figure Eight and is available in the 'data' folder.
+The project aims to use a NLP Machine Learning Pipeline in order to detect cases and provide faster help when disasters occur. The data was provided by Figure Eight and is available in the 'data' folder.
 
 ## Folder organization
 
