@@ -39,14 +39,21 @@ def clean_data(df):
     """
 
     # split the 'categories' column in multi-columns one-hot encoded
-    for index, row in tqdm(df.iterrows()):
-        for col in row['categories'].split(';'):
-            colname = col.split('-')[0]
-            value = col.split('-')[1]
+    categories = df['categories'].tolist()
 
-            df.loc[index, colname] = value
+    df_categories = pd.DataFrame([sub.split(";") for sub in categories])
+    categories = df_categories.iloc[1, :].str.split("-").tolist()
+    categories = [i[0] for i in categories]
+    
+    df_categories.columns = categories
+    for category in tqdm(categories):
+        values = df_categories[category].str.split("-").tolist()
+        df_categories[category] = pd.Series([i[1] for i in values]).astype(bool).astype(int)
 
     df.drop('categories', axis=1, inplace=True)
+
+    df = pd.concat([df, df_categories])
+    df.drop_duplicates(keep='first', inplace=True)
 
     df['message'] = df['message'].str.lower()
 

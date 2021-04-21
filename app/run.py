@@ -8,11 +8,23 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+# from sklearn.externals import joblib
+import joblib
 from sqlalchemy import create_engine
+from sklearn.base import BaseEstimator, TransformerMixin
+
+import plotly
 
 
 app = Flask(__name__)
+
+class GenreOneHotEncoding(BaseEstimator, TransformerMixin):
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, X):
+        return pd.get_dummies(X)
 
 def tokenize(text):
     tokens = word_tokenize(text)
@@ -39,12 +51,14 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    categories_count = df.astype(int).drop('genre', axis=1).sum()
+    print(categories_count)
+    categories_names = df.drop('genre', axis=1).columns
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -63,7 +77,25 @@ def index():
                     'title': "Genre"
                 }
             }
-        }
+        },
+        # {
+        #     'data': [
+        #         Bar(
+        #             x=categories_count,
+        #             y=categories_names
+        #         )
+        #     ],
+
+        #     'layout': {
+        #         'title': 'Distribution of Message Genres',
+        #         'yaxis': {
+        #             'title': "Count"
+        #         },
+        #         'xaxis': {
+        #             'title': "Genre"
+        #         }
+        #     }
+        # }
     ]
     
     # encode plotly graphs in JSON
