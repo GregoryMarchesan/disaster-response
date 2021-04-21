@@ -37,6 +37,7 @@ def clean_data(df):
     Returns:
     df (dataframe): Dataframe cleaned and transformed
     """
+    df['message'] = df['message'].str.lower()
 
     # split the 'categories' column in multi-columns one-hot encoded
     categories = df['categories'].tolist()
@@ -48,16 +49,17 @@ def clean_data(df):
     df_categories.columns = categories
     for category in tqdm(categories):
         values = df_categories[category].str.split("-").tolist()
-        df_categories[category] = pd.Series([i[1] for i in values]).astype(bool).astype(int)
+        df_categories[category] = pd.Series([i[1] for i in values]).astype(int).clip(upper=1)
+
+    df_categories.reset_index(inplace=True, drop=True)
+    df.reset_index(inplace=True, drop=True)
 
     df.drop('categories', axis=1, inplace=True)
+    
+    df_final = pd.concat([df, df_categories], axis=1)
+    df_final.drop_duplicates(keep='first', inplace=True)
 
-    df = pd.concat([df, df_categories])
-    df.drop_duplicates(keep='first', inplace=True)
-
-    df['message'] = df['message'].str.lower()
-
-    return df
+    return df_final
 
 
 def save_data(df, database_filename):
@@ -69,6 +71,7 @@ def save_data(df, database_filename):
     database_filename (string): The SQLite database filename
     """
     conn = sqlite3.connect(database_filename)
+
     df.to_sql(database_filename, con = conn, if_exists='replace', index=False)
 
 
