@@ -2,29 +2,27 @@
 
 ## Summary
 
-The project aims to use a NLP Machine Learning Pipeline in order to detect cases and 
-provide faster help when disasters occur. 
-The data was provided by Figure Eight and is available in the 'data' folder.
+The project aims to use a NLP Machine Learning Pipeline in order to detect cases and provide faster help when disasters occur. The data was provided by Figure Eight and is available in the 'data' folder.
 
 ## Folder organization
 
 The project is organized as follows:
 
-- app
-| - template
-| |- master.html  # main page of web app
-| |- go.html  # classification result page of web app
-|- run.py  # Flask file that runs app
-
-- data
-|- disaster_categories.csv  # data to process 
-|- disaster_messages.csv  # data to process
-|- process_data.py
-|- InsertDatabaseName.db   # database to save clean data to
-
-- models
-|- train_classifier.py
-|- classifier.pkl  # saved model 
+- app  
+| - template  
+| |- master.html  # main page of web app  
+| |- go.html  # classification result page of web app  
+|- run.py  # Flask file that runs app  
+  
+- data  
+|- disaster_categories.csv  # data with categories of disasters 
+|- disaster_messages.csv  # data with text messages  
+|- process_data.py  
+|- InsertDatabaseName.db   # database to save clean data to  
+  
+- models  
+|- train_classifier.py  
+|- classifier.pkl  # saved model   
 
 - README.md
 
