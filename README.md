@@ -55,7 +55,7 @@ The code runs in Python 3.7.3 and requires the following libraries:
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
 
-3. Go to http://0.0.0.0:3001/
+3. Go to http://localhost:3001/
 
 ## Acknowledgements & Licensing
 

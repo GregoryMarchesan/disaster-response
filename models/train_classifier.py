@@ -45,12 +45,11 @@ def load_data(database_filepath):
     conn.commit()
     conn.close()
 
-    # genre_one_hot = pd.get_dummies(df["genre"])
-
-    # X = pd.concat([df["message"], genre_one_hot], axis=1).values
+    # split values
     X = df["message"].values
     y = df.drop(["message", "genre"], axis=1).values
 
+    # get categories names
     category_names = df.drop(["message", "genre"], axis=1).columns
 
     return X, y, category_names
@@ -85,17 +84,20 @@ def build_model():
     Returns:
     model (): The trained model over the data
     """
-
+    
+    # text pipeline
     text_pipeline = Pipeline([
                               ('vect', CountVectorizer(tokenizer=tokenize)),
                               ('tfidf', TfidfTransformer())
                             ])
 
+    # full pipeline
     pipeline = Pipeline([
         ('text_pipeline', text_pipeline),
         ('clf', RandomForestClassifier())
     ])
 
+    # grid search parameters
     parameters = {
         'text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
         'text_pipeline__vect__max_df': (0.5, 0.75, 1.0),
@@ -126,8 +128,8 @@ def evaluate_model(model, X_test, Y_test, category_names):
         precision = precision_score(Y_test[i], Y_pred[i])
         recall = recall_score(Y_test[i], Y_pred[i])
         f1 = f1_score(Y_test[i], Y_pred[i])
-
-        print("", category)
+        
+        # print the metrics
         print("Category: {} | F1-Score: {:.2f} % | Precision: {:.2f} % | Recall: {:.2f} %".format(category, 
                                                                                                   f1*100, 
                                                                                                   precision*100, 

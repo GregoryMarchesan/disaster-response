@@ -43,7 +43,7 @@ def tokenize(text):
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('data/DisasterResponse.db', engine)
 
-# load modell
+# load model
 model = joblib.load("../models/classifier.pkl")
 
 

@@ -23,6 +23,7 @@ def load_data(messages_filepath, categories_filepath):
     df_categories = pd.read_csv(categories_filepath)
     df_categories.set_index('id', inplace=True)
 
+    # merge dataset by id
     df = pd.concat([df_messages, df_categories], axis=1)
 
     return df
@@ -39,14 +40,17 @@ def clean_data(df):
     """
     df['message'] = df['message'].str.lower()
 
-    # split the 'categories' column in multi-columns one-hot encoded
+    ### split the 'categories' column in multi-columns one-hot encoded
     categories = df['categories'].tolist()
-
+    
+    # get categories names
     df_categories = pd.DataFrame([sub.split(";") for sub in categories])
     categories = df_categories.iloc[1, :].str.split("-").tolist()
     categories = [i[0] for i in categories]
     
     df_categories.columns = categories
+    
+    # process each column removing the category name and make the value int
     for category in tqdm(categories):
         values = df_categories[category].str.split("-").tolist()
         df_categories[category] = pd.Series([i[1] for i in values]).astype(int).clip(upper=1)
@@ -56,6 +60,7 @@ def clean_data(df):
 
     df.drop('categories', axis=1, inplace=True)
     
+    # merge the finaldataset by index
     df_final = pd.concat([df, df_categories], axis=1)
     df_final.drop_duplicates(keep='first', inplace=True)
 
