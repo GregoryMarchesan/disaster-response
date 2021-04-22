@@ -18,13 +18,13 @@ The project is organized as follows:
 |- run.py                   # Flask file that runs app  
   
 - data  
-|- disaster_categories.csv  # data with categories of disasters 
+|- disaster_categories.csv  # data with categories of disasters  
 |- disaster_messages.csv    # data with text messages  
-|- process_data.py          # Python script that pre-process and merge the datasets
-|- DisasterResponse.db      # database with the merged and cleaned data
+|- process_data.py          # Python script that pre-process and merge the datasets  
+|- DisasterResponse.db      # database with the merged and cleaned data  
   
 - models  
-|- train_classifier.py      # Python script that creates a pipeline and trains the model
+|- train_classifier.py      # Python script that creates a pipeline and trains the model  
 |- classifier.pkl           # saved model   
 
 - README.md
