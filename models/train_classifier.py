@@ -22,14 +22,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.base import BaseEstimator, TransformerMixin
 
-class GenreOneHotEncoding(BaseEstimator, TransformerMixin):
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, X):
-        return pd.get_dummies(X)
-
 def load_data(database_filepath):
     """
     Loads the database from a SQLite file into the script and split it in X, y and category names
@@ -56,10 +48,10 @@ def load_data(database_filepath):
     # genre_one_hot = pd.get_dummies(df["genre"])
 
     # X = pd.concat([df["message"], genre_one_hot], axis=1).values
-    X = df[["message", "genre"]].values
-    y = df.drop(["message", "genre", "related"], axis=1).astype(int).values
+    X = df["message"].values
+    y = df.drop(["message", "genre"], axis=1).values
 
-    category_names = df.drop(["message", "genre", "related"], axis=1).columns
+    category_names = df.drop(["message", "genre"], axis=1).columns
 
     return X, y, category_names
 
@@ -99,26 +91,17 @@ def build_model():
                               ('tfidf', TfidfTransformer())
                             ])
 
-    genre_pipeline = Pipeline([
-                               ('genre', GenreOneHotEncoding())
-                             ])
-
-    preprocessor = ColumnTransformer(transformers=[('text_pipeline', text_pipeline, 0),
-                                                   ('num', genre_pipeline, 1)
-                                                  ])
-
     pipeline = Pipeline([
-        ('preprocessor', preprocessor),
+        ('text_pipeline', text_pipeline),
         ('clf', RandomForestClassifier())
     ])
 
     parameters = {
-        'preprocessor__text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
-        'preprocessor__text_pipeline__vect__max_df': (0.5, 0.75, 1.0),
-        'preprocessor__text_pipeline__vect__max_features': (None, 5000, 10000),
-        'preprocessor__text_pipeline__tfidf__use_idf': (True, False),
-        'clf__n_estimators': [50, 100, 200],
-        'clf__min_samples_split': [2, 3, 4]
+        'text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
+        'text_pipeline__vect__max_df': (0.5, 0.75, 1.0),
+        'text_pipeline__vect__max_features': (None, 5000, 10000),
+        'text_pipeline__tfidf__use_idf': (True, False),
+        'clf__n_estimators': [50, 100, 200]
     }
 
     cv = GridSearchCV(pipeline, param_grid=parameters)

@@ -1,6 +1,7 @@
 import json
 import plotly
 import pandas as pd
+import numpy as np
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -54,11 +55,8 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
-    print(df)
-
-    categories_count = df.drop('genre', axis=1).sum()
-    print(categories_count)
-    categories_names = df.drop('genre', axis=1).columns
+    categories_count = df.drop(['genre', 'message'], axis=1).sum()
+    categories_names = df.drop(['genre', 'message'], axis=1).columns
     
     # create visuals
     graphs = [
@@ -80,24 +78,24 @@ def index():
                 }
             }
         },
-        # {
-        #     'data': [
-        #         Bar(
-        #             x=categories_count,
-        #             y=categories_names
-        #         )
-        #     ],
+        {
+            'data': [
+                Bar(
+                    x=categories_names,
+                    y=categories_count
+                )
+            ],
 
-        #     'layout': {
-        #         'title': 'Distribution of Message Genres',
-        #         'yaxis': {
-        #             'title': "Count"
-        #         },
-        #         'xaxis': {
-        #             'title': "Genre"
-        #         }
-        #     }
-        # }
+            'layout': {
+                'title': 'Distribution of Classified Messages',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Message Category"
+                }
+            }
+        }
     ]
     
     # encode plotly graphs in JSON
@@ -115,7 +113,7 @@ def go():
     query = request.args.get('query', '') 
 
     # use model to predict classification for query
-    classification_labels = model.predict([query])[0]
+    classification_labels = model.predict(np.array(query).reshape(1, -1))[0]
     classification_results = dict(zip(df.columns[4:], classification_labels))
 
     # This will render the go.html Please see that file. 
