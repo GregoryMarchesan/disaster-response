@@ -19,14 +19,6 @@ import plotly
 
 app = Flask(__name__)
 
-class GenreOneHotEncoding(BaseEstimator, TransformerMixin):
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, X):
-        return pd.get_dummies(X)
-
 def tokenize(text):
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
@@ -112,9 +104,13 @@ def go():
     # save user input in query
     query = request.args.get('query', '') 
 
+    # print(df.columns)
+
     # use model to predict classification for query
-    classification_labels = model.predict(np.array(query).reshape(1, -1))[0]
-    classification_results = dict(zip(df.columns[4:], classification_labels))
+    classification_labels = model.predict(np.array([query]))[0]
+    classification_results = dict(zip(df.columns[2:], classification_labels))
+
+    print(classification_results)
 
     # This will render the go.html Please see that file. 
     return render_template(
