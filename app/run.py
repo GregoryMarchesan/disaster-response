@@ -12,7 +12,6 @@ from plotly.graph_objs import Bar
 # from sklearn.externals import joblib
 import joblib
 from sqlalchemy import create_engine
-from sklearn.base import BaseEstimator, TransformerMixin
 
 import plotly
 
@@ -20,6 +19,16 @@ import plotly
 app = Flask(__name__)
 
 def tokenize(text):
+    """
+    Tokenize the text to further process in the ML algorithm
+
+    Parameters:
+    text (string): the text from each message
+
+    Returns:
+    clean_tokens (list): The list of tokens processed
+    """
+
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -42,7 +51,9 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
+    """
+    Generates the basic visualization of the web app, plotting two graphs with dataset information 
+    """
     # extract data needed for visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
@@ -101,16 +112,16 @@ def index():
 # web page that handles user query and displays model results
 @app.route('/go')
 def go():
+    """
+    Do the prediction for the dataset and shows the categories that apply
+    """
+
     # save user input in query
     query = request.args.get('query', '') 
-
-    # print(df.columns)
 
     # use model to predict classification for query
     classification_labels = model.predict(np.array([query]))[0]
     classification_results = dict(zip(df.columns[2:], classification_labels))
-
-    print(classification_results)
 
     # This will render the go.html Please see that file. 
     return render_template(
@@ -121,6 +132,9 @@ def go():
 
 
 def main():
+    """
+    Main function of the disaster response pipeline
+    """
     app.run(host='0.0.0.0', port=3001, debug=True)
 
 
